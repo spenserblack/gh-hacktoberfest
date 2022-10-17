@@ -8,8 +8,10 @@ import (
 	"os"
 
 	"github.com/cli/go-gh"
+	"github.com/cli/go-gh/pkg/api"
 	"github.com/cli/go-gh/pkg/repository"
 	"github.com/spenserblack/gh-hacktoberfest/pkg/label"
+	"github.com/spenserblack/gh-hacktoberfest/pkg/topics"
 )
 
 var hackoberfestLabels = [2]label.Label{
@@ -43,6 +45,27 @@ func main() {
 		}
 		fmt.Printf("Created label %s\n", response.Name)
 	}
+
+	fmt.Println("Adding topic...")
+	topicResponse, err := addTopic(client, repo)
+	fmt.Println(stringsToAnys(append([]string{"Topics set to:"}, topicResponse.Names...))...)
+}
+
+func addTopic(client api.RESTClient, repo repository.Repository) (response topics.Topics, err error) {
+	endpoint := fmt.Sprintf("repos/%s/%s/topics", repo.Owner(), repo.Name())
+	currentTopics := topics.Topics{}
+	err = client.Get(endpoint, &currentTopics)
+	if err != nil {
+		return
+	}
+
+	topicSet := currentTopics.Set()
+	topicSet.Add(topics.Hacktoberfest)
+	newTopics := topicSet.Topics()
+
+	body, _ := json.Marshal(newTopics)
+	err = client.Put(endpoint, bytes.NewReader(body), &response)
+	return
 }
 
 var repovar string
@@ -57,4 +80,12 @@ func defaultRepo() string {
 		return ""
 	}
 	return fmt.Sprintf("%s/%s", repo.Owner(), repo.Name())
+}
+
+func stringsToAnys(ss []string) []any {
+	anys := make([]any, len(ss))
+	for i, s := range ss {
+		anys[i] = s
+	}
+	return anys
 }
