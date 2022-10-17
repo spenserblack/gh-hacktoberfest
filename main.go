@@ -49,6 +49,8 @@ func main() {
 	fmt.Println("Adding topic...")
 	topicResponse, err := addTopic(client, repo)
 	fmt.Println(stringsToAnys(append([]string{"Topics set to:"}, topicResponse.Names...))...)
+
+	fmt.Println("🎃 Done!")
 }
 
 func addTopic(client api.RESTClient, repo repository.Repository) (response topics.Topics, err error) {
