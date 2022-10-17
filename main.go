@@ -34,6 +34,7 @@ func main() {
 			bytes.NewReader(body),
 			&response,
 		)
+		// TODO: Type assert to go-gh/pkg/api.HTTPError to check if it's an already exists error
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 			continue
