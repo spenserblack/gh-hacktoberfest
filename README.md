@@ -1,5 +1,7 @@
 # `gh-hacktoberfest`
 
+[![CI](https://github.com/spenserblack/gh-hacktoberfest/actions/workflows/ci.yml/badge.svg)](https://github.com/spenserblack/gh-hacktoberfest/actions/workflows/ci.yml)
+
 Bootstraps your repository to be ready for Hacktoberfest.
 
 ## Installation
