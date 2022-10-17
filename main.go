@@ -26,6 +26,8 @@ func main() {
 	}
 	client, err := gh.RESTClient(nil)
 	fmt.Println("Creating labels...")
+
+	// NOTE: Refer to https://docs.github.com/en/rest/issues/labels#create-a-label
 	for _, l := range hackoberfestLabels {
 		body, _ := json.Marshal(l)
 		response := label.Label{}
