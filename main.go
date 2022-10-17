@@ -1,26 +1,57 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"flag"
 	"fmt"
+	"os"
 
 	"github.com/cli/go-gh"
+	"github.com/cli/go-gh/pkg/repository"
+	"github.com/spenserblack/gh-hacktoberfest/pkg/label"
 )
 
-func main() {
-	fmt.Println("hi world, this is the gh-hacktoberfest extension!")
-	client, err := gh.RESTClient(nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	response := struct {Login string}{}
-	err = client.Get("user", &response)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("running as %s\n", response.Login)
+var hackoberfestLabels = [2]label.Label{
+	{Name: "hacktoberfest", Description: "Good for hacktoberfest participants", Color: "FF8800"},
+	{Name: "hacktoberfest-accepted", Description: "Accepted hacktoberfest contributions", Color: "FFBB00"},
 }
 
-// For more examples of using go-gh, see:
-// https://github.com/cli/go-gh/blob/trunk/example_gh_test.go
+func main() {
+	flag.Parse()
+	repo, err := repository.Parse(repovar)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%e\n", err)
+		os.Exit(1)
+	}
+	client, err := gh.RESTClient(nil)
+	fmt.Println("Creating labels...")
+	for _, l := range hackoberfestLabels {
+		body, _ := json.Marshal(l)
+		response := label.Label{}
+		err := client.Post(
+			fmt.Sprintf("repos/%s/%s/labels", repo.Owner(), repo.Name()),
+			bytes.NewReader(body),
+			&response,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+			continue
+		}
+		fmt.Printf("Created label %s\n", response.Name)
+	}
+}
+
+var repovar string
+
+func init() {
+	flag.StringVar(&repovar, "R", defaultRepo(), "repo to query")
+}
+
+func defaultRepo() string {
+	repo, err := gh.CurrentRepository()
+	if err != nil || repo == nil {
+		return ""
+	}
+	return fmt.Sprintf("%s/%s", repo.Owner(), repo.Name())
+}
