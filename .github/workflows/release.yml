@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+jobs:
+  release:
+    name: GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - uses: spenserblack/actions-tag-to-release@v1
+        with:
+          prerelease: auto
+
+  extension-precompile:
+    name: Make gh Extensions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: release
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cli/gh-extension-precompile@v1
+        with:
+          go_version: "1.18"
