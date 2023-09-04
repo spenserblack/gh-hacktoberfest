@@ -12,7 +12,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
       - uses: spenserblack/actions-tag-to-release@v2
@@ -24,7 +24,7 @@ jobs:
       contents: write
     needs: release
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: cli/gh-extension-precompile@v1
         with:
           go_version: "1.18"
