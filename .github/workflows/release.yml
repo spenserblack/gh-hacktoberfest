@@ -25,6 +25,6 @@ jobs:
     needs: release
     steps:
       - uses: actions/checkout@v4
-      - uses: cli/gh-extension-precompile@v1
+      - uses: cli/gh-extension-precompile@v2
         with:
           go_version: "1.18"
